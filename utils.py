@@ -52,10 +52,9 @@ def draw_bounding_boxes_on_image_array(image_np, boxes, classes, scores, min_sco
         x0 = int(box[1]*width)
         y1 = int(box[2]*height)
         x1 = int(box[3]*width)
-        display_str = str(classes[i]) + ', ' + str(round(scores[i]*100))
+        # display_str = str(classes[i]) + ', ' + str(round(scores[i]*100))
         # Create a Rectangle patch
         rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0, linewidth=1, edgecolor='r', facecolor='none', fill=False)
         ax.add_patch(rect)
 
     plt.show()
-    fig.savefig('rect2.png', dpi=90, bbox_inches='tight')
