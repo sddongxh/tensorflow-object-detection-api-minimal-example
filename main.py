@@ -11,11 +11,10 @@ label_file_path = 'mscoco_label_map.pbtxt'
 label_dict = load_pbtxt_to_label_dict(label_file_path)
 
 sess = tf.Session()
-detection_graph = sess.graph
 
 load_model_to_session(sess, frozen_model_path)
 
-image_path = 'test_images/image1.jpg'
+image_path = 'image1.jpg'
 image = Image.open(image_path)
 image_np = image_to_np_array(image)
 image_in = np.expand_dims(image_np, axis=0)  # input ready
