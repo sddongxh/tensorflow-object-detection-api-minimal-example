@@ -18,6 +18,18 @@ def load_model_to_session(sess, pb_model_path):
         tf.import_graph_def(od_graph_def, name='')
 
 
+def load_pbtxt_to_label_dict(pb_label_file_path):  # only work for mascoco label map now
+    label_dict = dict()
+    with open(pb_label_file_path) as f:
+        content = f.readlines()
+        content = [x.strip() for x in content]
+        for i in range(len(content) // 5):
+            index = int(content[i * 5 + 2][4:])
+            name = content[i * 5 + 3][15:-1]
+            label_dict[index] = name
+    return label_dict
+
+
 def inference_one_image(sess, image):
     graph = sess.graph
     image_tensor = graph.get_tensor_by_name('image_tensor:0')  # input
@@ -36,15 +48,14 @@ def inference_one_image(sess, image):
     output_dict['detection_scores'] = output_dict['detection_scores'][0]
     return output_dict
 
-
-def draw_bounding_boxes_on_image_array(image_np, boxes, classes, scores, min_score_threshold=0.5): 
+def draw_bounding_boxes_on_image_array(image_np, boxes, classes, scores, min_score_threshold=0.5, label_dict=None):
     height = image_np.shape[0]
     width = image_np.shape[1]
 
     # Create figure and axes
     fig, ax = plt.subplots()
     ax.imshow(image_np)
-    for i in range(boxes.shape[0]): 
+    for i in range(boxes.shape[0]):
         if scores[i] < min_score_threshold:
             continue
         box = tuple(boxes[i].tolist())
@@ -52,9 +63,11 @@ def draw_bounding_boxes_on_image_array(image_np, boxes, classes, scores, min_sco
         x0 = int(box[1]*width)
         y1 = int(box[2]*height)
         x1 = int(box[3]*width)
-        # display_str = str(classes[i]) + ', ' + str(round(scores[i]*100))
         # Create a Rectangle patch
         rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0, linewidth=1, edgecolor='r', facecolor='none', fill=False)
         ax.add_patch(rect)
-
+        if label_dict is not None:
+            display_str = label_dict[classes[i]] + ', ' + str(round(scores[i]*100))
+            ax.text(x0 ,y0, display_str, color='white')
     plt.show()
+

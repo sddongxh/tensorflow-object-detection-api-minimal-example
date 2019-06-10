@@ -5,8 +5,10 @@ from utils import *
 from PIL import Image
 
 
-#PATH_TO_FROZEN_GRAPH = 'ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb'
-frozen_model_path = '../frozen_models/faster_rcnn_resnet101_coco_2018_01_28/frozen_inference_graph.pb'
+frozen_model_path = 'ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb'
+
+label_file_path = 'mscoco_label_map.pbtxt'
+label_dict = load_pbtxt_to_label_dict(label_file_path)
 
 sess = tf.Session()
 detection_graph = sess.graph
@@ -24,4 +26,4 @@ boxes = output_dict['detection_boxes']
 classes = output_dict['detection_classes']
 scores = output_dict['detection_scores']
 
-draw_bounding_boxes_on_image_array(image_np, boxes, classes, scores)
+draw_bounding_boxes_on_image_array(image_np, boxes, classes, scores, 0.5, label_dict)
